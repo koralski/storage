@@ -1,1 +1,1 @@
-# storage
+This is a scratch project to put some experimental files. Nothing interesting for the public.
