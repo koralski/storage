@@ -1,6 +1,6 @@
 echo Start_script
 
-while !command -v docker >/dev/null 2>&1
+while ! [ -f /usr/bin/docker ]
 do
   echo wait for docker
   sleep 5
