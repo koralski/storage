@@ -19,7 +19,12 @@ if docker load -i nginx.tar
 then
   echo image is loaded sucessfully
 else
-  echo image is loading failed
+  echo image loading failed
+  echo "pwd: `pwd`"
+  echo "\$0: $0"
+  echo "basename: `basename $0`"
+  echo "dirname: `dirname $0`"
+  echo "dirname/readlink: $(dirname $(readlink -f $0))"
 fi
 
 
