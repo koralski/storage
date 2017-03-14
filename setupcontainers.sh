@@ -1,5 +1,13 @@
 echo Start_script
 
+if [ -f `pwd`/nginx.tar ]
+then
+  echo image download sucessfully to `pwd`/nginx.tar
+else
+  echo image download failed
+fi
+
+
 while ! [ -f /usr/bin/docker ]
 do
   sleep 5
@@ -15,7 +23,7 @@ done
 echo docker is running
 docker --version
 
-if docker load -i nginx.tar
+if docker load -i `pwd`/nginx.tar
 then
   echo image is loaded sucessfully
 else
