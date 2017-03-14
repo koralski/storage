@@ -2,12 +2,15 @@ echo Start_script
 
 while ! [ -f /usr/bin/docker ]
 do
-  echo wait for docker
+  echo wait for docker installation
   sleep 5
 done
 
-sleep 5
-service docker start
+while ! docker ps
+do
+  echo wait for docker service to run
+  sleep 5
+done
 
 docker --version
 docker load -i nginx.tar
