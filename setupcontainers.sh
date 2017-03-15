@@ -1,6 +1,6 @@
 echo Start_script
-imageName = $1
-imageFile = $2
+imageName=$1
+imageFile=$2
 if [ -f `pwd`/$imageFile ]
 then
   echo image download sucessfully to `pwd`/$imageFile
