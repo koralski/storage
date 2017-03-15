@@ -206,7 +206,7 @@
                   },
 
                   "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh nginx:latest nginx.tar"
+                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 -p 443:443 nginx:latest' nginx.tar"
                   }
                 }
             }
