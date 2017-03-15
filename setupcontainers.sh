@@ -1,12 +1,12 @@
 echo Start_script
-
-if [ -f `pwd`/nginx.tar ]
+imageName = $1
+imageFile = $2
+if [ -f `pwd`/$imageFile ]
 then
-  echo image download sucessfully to `pwd`/nginx.tar
+  echo image download sucessfully to `pwd`/$imageFile
 else
   echo image download failed
 fi
-
 
 while ! [ -f /usr/bin/docker ]
 do
@@ -23,20 +23,15 @@ done
 echo docker is running
 docker --version
 
-if docker load -i `pwd`/nginx.tar
+if docker load -i `pwd`/$imageFile
 then
   echo image is loaded sucessfully
 else
   echo image loading failed
-  echo "pwd: `pwd`"
-  echo "\$0: $0"
-  echo "basename: `basename $0`"
-  echo "dirname: `dirname $0`"
-  echo "dirname/readlink: $(dirname $(readlink -f $0))"
+  echo "current folder is: `pwd`"
 fi
 
-
-if docker run -d -p 80:80 nginx
+if docker run -d -p 80:80 $imageName
 then
   echo running sucessfully
 else

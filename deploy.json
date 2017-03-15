@@ -206,7 +206,7 @@
                   },
 
                   "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh"
+                    "commandToExecute": "sh setupcontainers.sh nginx:latest nginx.tar"
                   }
                 }
             }
