@@ -66,6 +66,9 @@
     "nicName": "[concat(variables('namingInfix'), 'nic')]",
     "ipConfigName": "[concat(variables('namingInfix'), 'ipconfig')]",
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
+	"healthProbeName": "[concat(variables('namingInfix'), 'probe')]",
+	"healthProbeID": "[concat(variables('lbID'),'/probes/',variables('healthProbeName'))]",
+	"bePoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('bePoolName'))]",
     "osType": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
@@ -135,7 +138,6 @@
             "name": "[variables('bePoolName')]"
           }
         ],
-
         "inboundNatPools": [
           {
             "name": "[variables('natPoolName')]",
@@ -149,7 +151,40 @@
               "backendPort": "[variables('natBackendPort')]"
             }
           }
-        ]
+        ],
+		"loadBalancingRules": [
+			{
+				"name": "WebBalanceRule",
+				"properties": {
+					"frontendIPConfiguration": {
+						"id": "[variables('frontEndIPConfigID')]"
+					},
+					"frontendPort": 80,
+					"backendPort": 80,
+					"enableFloatingIP": false,
+					"idleTimeoutInMinutes": 4,
+					"protocol": "Tcp",
+					"loadDistribution": "Default",
+					"backendAddressPool": {
+						"id": "[variables('bePoolID')]"
+					},
+					"probe": {
+						"id": "[variables('healthProbeID')]"
+					}
+				}
+			}
+		],
+		"probes": [
+			{
+				"name": "[variables('healthProbeName')]",
+				"properties": {
+					"protocol": "Tcp",
+					"port": 80,
+					"intervalInSeconds": 5,
+					"numberOfProbes": 2
+				}
+			}
+		]
       }
     },
     {

@@ -34,8 +34,8 @@ if docker load -i `pwd`/$imageFile
 then
   echo image is loaded sucessfully
 else
-  echo image loading failed
-  echo "current folder is: `pwd`"
+  echo image loading failed: exit code: $?
+  echo image path is: `pwd`/$imageFile
 fi
 
 if docker run -d $dockerOptions
