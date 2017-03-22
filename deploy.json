@@ -4,7 +4,7 @@
   "parameters": {
     "vmSku": {
       "type": "string",
-      "defaultValue": "Standard_A0",
+      "defaultValue": "Standard_DS1_v2",
       "metadata": {
         "description": "Size of VMs in the VM Scale Set."
       }
@@ -76,6 +76,7 @@
       "version": "latest"
     }, 
     "imageReference": "[variables('osType')]",
+	"customImageReference": {"id": "/subscriptions/f028f547-f912-42b0-8892-89ea6eda4c5e/resourceGroups/atanasDemo/providers/Microsoft.Compute/images/containerVM-image-20170320174622"},
     "computeApiVersion": "2016-04-30-preview",
     "networkApiVersion": "2016-03-30",
     "storageApiVersion": "2015-06-15"
@@ -235,13 +236,13 @@
 
                     "fileUris": [
 						"https://raw.githubusercontent.com/koralski/storage/master/setupcontainers.sh",
-						"https://atanas.file.core.windows.net/share/nginx.tar?sv=2016-05-31&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-03-07T22:07:30Z&st=2016-03-07T14:07:30Z&spr=https&sig=J2tkH6GBnoEXEuiCuQgCYxHfjqiEuhZTC6GXVeI5qMU%3D"
+						"https://atanas.file.core.windows.net/share/demoweb.tar?sv=2016-05-31&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-03-07T22:07:30Z&st=2016-03-07T14:07:30Z&spr=https&sig=J2tkH6GBnoEXEuiCuQgCYxHfjqiEuhZTC6GXVeI5qMU%3D"
 						]
 
                   },
 
                   "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 -p 443:443 nginx:latest' nginx.tar"
+                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 container_demo' demoweb.tar"
                   }
                 }
             }
@@ -253,7 +254,7 @@
               "createOption": "FromImage"
             },
             "dataDisks": [ ],
-            "imageReference": "[variables('imageReference')]"
+            "imageReference": "[variables('customImageReference')]"
           },
           "osProfile": {
             "computerNamePrefix": "[variables('namingInfix')]",
