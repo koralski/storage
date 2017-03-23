@@ -89,12 +89,12 @@
                   "settings": {
 
                     "fileUris": [
-						"https://raw.githubusercontent.com/koralski/storage/master/stopcontainer.sh"
+						"https://raw.githubusercontent.com/koralski/storage/master/listcontainers.sh"
 						]
                   },
 
                   "protectedSettings": {
-                    "commandToExecute": "sh stopcontainer.sh container_name"
+                    "commandToExecute": "sh listcontainers.sh"
                   }
                 }
             }
