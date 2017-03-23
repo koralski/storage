@@ -214,7 +214,7 @@
                   },
 
                   "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 container_demo' demoweb.tar"
+                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 -name container_name container_demo' demoweb.tar"
                   }
                 }
             }

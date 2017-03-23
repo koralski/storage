@@ -206,15 +206,10 @@
                   "typeHandlerVersion": "1.4",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-
-                    "fileUris": [
-						"https://raw.githubusercontent.com/koralski/storage/master/setupcontainers.sh",
-						"https://atanas.file.core.windows.net/share/demoweb.tar?sv=2016-05-31&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-03-07T22:07:30Z&st=2016-03-07T14:07:30Z&spr=https&sig=J2tkH6GBnoEXEuiCuQgCYxHfjqiEuhZTC6GXVeI5qMU%3D"
-						]
+                    "fileUris": []
                   },
-
                   "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 container_demo' demoweb.tar"
+                    "commandToExecute": "echo CustomScriptForLinux installed."
                   }
                 }
             }
