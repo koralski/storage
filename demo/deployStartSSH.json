@@ -1,0 +1,95 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmSku": {
+      "type": "string",
+      "defaultValue": "Standard_DS1_v2",
+      "metadata": {
+        "description": "Size of VMs in the VM Scale Set."
+      }
+    },
+    "vmssName": {
+      "type": "string",
+      "metadata": {
+        "description": "String used as a base for naming resources. Must be 3-61 characters in length and globally unique across Azure. A hash is prepended to this string for some resources, and resource-specific information is appended."
+      },
+      "maxLength": 61
+    },
+    "instanceCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VM instances (100 or less)."
+      },
+      "maxValue": 100
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username on all VMs."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password on all VMs."
+      }
+    }
+  },
+  "variables": {
+    "namingInfix": "[toLower(substring(concat(parameters('vmssName'), uniqueString(resourceGroup().id)), 0, 9))]",
+    "longNamingInfix": "[toLower(parameters('vmssName'))]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetPrefix": "10.0.0.0/24",
+
+   
+    "computeApiVersion": "2016-04-30-preview",
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "name": "[variables('namingInfix')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('computeApiVersion')]",
+      "properties": {
+        "virtualMachineProfile": {
+			"extensionProfile": {
+			  "extensions": [
+			  	{
+					"name": "dockerExtension",
+					"properties": {
+					  "publisher": "Microsoft.Azure.Extensions",
+					  "settings": {},
+					  "typeHandlerVersion": "1.0",
+					  "autoUpgradeMinorVersion": true,
+					  "type": "DockerExtension"
+					}
+				},
+				{
+					"name": "CustomScriptForLinux",
+					"type": "Microsoft.Compute/virtualMachines/extensions",
+					"location": "[resourceGroup().location]",
+					"properties": {
+					  "publisher": "Microsoft.OSTCExtensions",
+					  "type": "CustomScriptForLinux",
+					  "typeHandlerVersion": "1.4",
+					  "autoUpgradeMinorVersion": true,
+					  "settings": {
+						"fileUris": [
+							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
+							]
+					  },
+
+					  "protectedSettings": {
+						"commandToExecute": "sh startcontainer.sh '-p 60022:22 --name ssh_container_name -e ROOT_PASS=Admin1234Admin1234 nuagebec/ubuntu'"
+					  }
+					}
+				}
+			  ]
+			}
+         
+        }
+      }
+    }
+  ]
+}
