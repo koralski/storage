@@ -239,7 +239,9 @@
                   "typeHandlerVersion": "1.4",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "fileUris": []
+						"fileUris": [
+							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
+							]
                   },
                   "protectedSettings": {
                     "commandToExecute": "echo CustomScriptForLinux installed."

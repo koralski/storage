@@ -76,12 +76,12 @@
 					  "autoUpgradeMinorVersion": true,
 					  "settings": {
 						"fileUris": [
-							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
+							
 							]
 					  },
 
 					  "protectedSettings": {
-						"commandToExecute": "sh startcontainer.sh '-p 60022:22 --name ssh_container_name -e ROOT_PASS=Admin1234Admin1234 nuagebec/ubuntu'"
+						"commandToExecute": "docker run -d -p 60022:22 --name ssh_container_name -e ROOT_PASS=Admin1234Admin1234 nuagebec/ubuntu"
 					  }
 					}
 				}

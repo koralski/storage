@@ -76,12 +76,12 @@
 					  "autoUpgradeMinorVersion": true,
 					  "settings": {
 						"fileUris": [
-							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
+							
 							]
 					  },
 
 					  "protectedSettings": {
-						"commandToExecute": "sh startcontainer.sh '-p 80:80 --name container_name koralski/azure-vmss-nginx'"
+						"commandToExecute": "docker run -d -p 80:80 --name container_name koralski/azure-vmss-nginx"
 					  }
 					}
 				}
