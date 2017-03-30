@@ -15,16 +15,20 @@ else
 fi
 
 # wait for docker extension to be installed
-while ! [ -f /usr/bin/docker ]
+COUNTER=0
+while ! [ -f /usr/bin/docker ]  && [ $COUNTER -lt 10 ]
 do
   sleep 5
+  let COUNTER=COUNTER+1
 done
 echo docker installed
 
 # wait for docker daemon to start
-while ! docker ps >/dev/null 2>&1
+COUNTER=0
+while ! docker ps && [ $COUNTER -lt 10 ] >/dev/null 2>&1
 do
   sleep 5
+  let COUNTER=COUNTER+1
 done
 echo docker daemon is running
 docker --version
