@@ -41,228 +41,44 @@
     "longNamingInfix": "[toLower(parameters('vmssName'))]",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
-    "virtualNetworkName": "[concat(variables('namingInfix'), 'vnet')]",
-    "publicIPAddressName": "[concat(variables('namingInfix'), 'pip')]",
-    "subnetName": "[concat(variables('namingInfix'), 'subnet')]",
-    "loadBalancerName": "[concat(variables('namingInfix'), 'lb')]",
-    "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
-    "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
-    "natPoolName": "[concat(variables('namingInfix'), 'natpool')]",
-    "bePoolName": "[concat(variables('namingInfix'), 'bepool')]",
-    "natStartPort": 50000,
-    "natEndPort": 50119,
-    "natBackendPort": 22,
-    "nicName": "[concat(variables('namingInfix'), 'nic')]",
-    "ipConfigName": "[concat(variables('namingInfix'), 'ipconfig')]",
-    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
-	"healthProbeName": "[concat(variables('namingInfix'), 'probe')]",
-	"healthProbeID": "[concat(variables('lbID'),'/probes/',variables('healthProbeName'))]",
-	"bePoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('bePoolName'))]",
-	"cutomImageResourceGroup": "atanasDemo",
-	"cutomImageName": "containerVM-image-20170320174622",
-	"customImageId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', variables('cutomImageResourceGroup'), '/providers/Microsoft.Compute/images/', variables('cutomImageName'))]",
-	"customImageReference": {"id": "[variables('customImageId')]"},
+
+   
     "computeApiVersion": "2016-04-30-preview",
-    "networkApiVersion": "2016-03-30",
-    "storageApiVersion": "2015-06-15"
   },
   "resources": [
-    {
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('virtualNetworkName')]",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[variables('networkApiVersion')]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[variables('networkApiVersion')]",
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "dnsSettings": {
-          "domainNameLabel": "[variables('longNamingInfix')]"
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Network/loadBalancers",
-      "name": "[variables('loadBalancerName')]",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[variables('networkApiVersion')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
-      ],
-      "properties": {
-        "frontendIPConfigurations": [
-          {
-            "name": "LoadBalancerFrontEnd",
-            "properties": {
-              "publicIPAddress": {
-                "id": "[variables('publicIPAddressID')]"
-              }
-            }
-          }
-        ],
-        "backendAddressPools": [
-          {
-            "name": "[variables('bePoolName')]"
-          }
-        ],
-        "inboundNatPools": [
-          {
-            "name": "[variables('natPoolName')]",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "protocol": "tcp",
-              "frontendPortRangeStart": "[variables('natStartPort')]",
-              "frontendPortRangeEnd": "[variables('natEndPort')]",
-              "backendPort": "[variables('natBackendPort')]"
-            }
-          }
-        ],
-		"loadBalancingRules": [
-			{
-				"name": "WebBalanceRule",
-				"properties": {
-					"frontendIPConfiguration": {
-						"id": "[variables('frontEndIPConfigID')]"
-					},
-					"frontendPort": 80,
-					"backendPort": 80,
-					"enableFloatingIP": false,
-					"idleTimeoutInMinutes": 4,
-					"protocol": "Tcp",
-					"loadDistribution": "Default",
-					"backendAddressPool": {
-						"id": "[variables('bePoolID')]"
-					},
-					"probe": {
-						"id": "[variables('healthProbeID')]"
-					}
-				}
-			}
-		],
-		"probes": [
-			{
-				"name": "[variables('healthProbeName')]",
-				"properties": {
-					"protocol": "Tcp",
-					"port": 80,
-					"intervalInSeconds": 5,
-					"numberOfProbes": 2
-				}
-			}
-		]
-      }
-    },
     {
       "type": "Microsoft.Compute/virtualMachineScaleSets",
       "name": "[variables('namingInfix')]",
       "location": "[resourceGroup().location]",
       "apiVersion": "[variables('computeApiVersion')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-      ],
-      "sku": {
-        "name": "[parameters('vmSku')]",
-        "tier": "Standard",
-        "capacity": "[parameters('instanceCount')]"
-      },
       "properties": {
-        "overprovision": "true",
-        "upgradePolicy": {
-          "mode": "Automatic"
-        },
-
         "virtualMachineProfile": {
-        "extensionProfile": {
-          "extensions": [
-            {
-                "name": "CustomScriptForLinux",
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "location": "[resourceGroup().location]",
-                "properties": {
-                  "publisher": "Microsoft.OSTCExtensions",
-                  "type": "CustomScriptForLinux",
-                  "typeHandlerVersion": "1.4",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
+			"extensionProfile": {
+			  "extensions": [
+				{
+					"name": "CustomScriptForLinux",
+					"type": "Microsoft.Compute/virtualMachines/extensions",
+					"location": "[resourceGroup().location]",
+					"properties": {
+					  "publisher": "Microsoft.OSTCExtensions",
+					  "type": "CustomScriptForLinux",
+					  "typeHandlerVersion": "1.4",
+					  "autoUpgradeMinorVersion": true,
+					  "settings": {
+						"fileUris": [
+							"https://raw.githubusercontent.com/koralski/storage/master/setupcontainers.sh",
+							"https://atanas.file.core.windows.net/share/demoweb.tar?sv=2016-05-31&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-03-07T22:07:30Z&st=2016-03-07T14:07:30Z&spr=https&sig=J2tkH6GBnoEXEuiCuQgCYxHfjqiEuhZTC6GXVeI5qMU%3D"
+							]
+					  },
 
-                    "fileUris": [
-						"https://raw.githubusercontent.com/koralski/storage/master/setupcontainers.sh",
-						"https://atanas.file.core.windows.net/share/demoweb.tar?sv=2016-05-31&ss=bfqt&srt=sco&sp=rwdlacup&se=2018-03-07T22:07:30Z&st=2016-03-07T14:07:30Z&spr=https&sig=J2tkH6GBnoEXEuiCuQgCYxHfjqiEuhZTC6GXVeI5qMU%3D"
-						]
-                  },
-
-                  "protectedSettings": {
-                    "commandToExecute": "sh setupcontainers.sh '-p 80:80 --name container_name container_demo' demoweb.tar"
-                  }
-                }
-            }
-          ]
-        },
-          "storageProfile": {
-            "osDisk": {
-              "caching": "ReadOnly",
-              "createOption": "FromImage"
-            },
-            "dataDisks": [ ],
-            "imageReference": "[variables('customImageReference')]"
-          },
-          "osProfile": {
-            "computerNamePrefix": "[variables('namingInfix')]",
-            "adminUsername": "[parameters('adminUsername')]",
-            "adminPassword": "[parameters('adminPassword')]"
-          },
-          "networkProfile": {
-            "networkInterfaceConfigurations": [
-              {
-                "name": "[variables('nicName')]",
-                "properties": {
-                  "primary": "true",
-                  "ipConfigurations": [
-                    {
-                      "name": "[variables('ipConfigName')]",
-                      "properties": {
-                        "subnet": {
-                          "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'), '/subnets/', variables('subnetName'))]"
-                        },
-                        "loadBalancerBackendAddressPools": [
-                          {
-                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('loadBalancerName'), '/backendAddressPools/', variables('bePoolName'))]"
-                          }
-                        ],
-                        "loadBalancerInboundNatPools": [
-                          {
-                            "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('loadBalancerName'), '/inboundNatPools/', variables('natPoolName'))]"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
+					  "protectedSettings": {
+						"commandToExecute": "sh setupcontainers.sh '-p 80:80 --name container_name container_demo' demoweb.tar"
+					  }
+					}
+				}
+			  ]
+			}
+         
         }
       }
     }
