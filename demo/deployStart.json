@@ -76,7 +76,7 @@
 					  "autoUpgradeMinorVersion": true,
 					  "settings": {
 						"fileUris": [
-							"https://raw.githubusercontent.com/koralski/storage/demo/master/startcontainer.sh",
+							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
 							]
 					  },
 
