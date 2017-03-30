@@ -25,7 +25,7 @@ echo docker installed
 
 # wait for docker daemon to start
 COUNTER=0
-while ! docker ps && [ $COUNTER -lt 10 ] >/dev/null 2>&1
+while ! docker ps >/dev/null 2>&1 && [ $COUNTER -lt 10 ]
 do
   sleep 5
   let COUNTER=COUNTER+1
