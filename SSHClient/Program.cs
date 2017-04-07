@@ -1,4 +1,13 @@
-﻿using Renci.SshNet;
+﻿using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Prng;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
+using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +41,18 @@ namespace SSHClient
                 host = hostAndPort[0];
                 port = int.Parse(hostAndPort[1]);
             }
+
+            var kpgen = new RsaKeyPairGenerator();
+            kpgen.Init(new KeyGenerationParameters(new SecureRandom(new CryptoApiRandomGenerator()), 2048));
+            var keyPair = kpgen.GenerateKeyPair();
+            PrivateKeyInfo pkInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);
+            String privateKey = Convert.ToBase64String(pkInfo.GetDerEncoded());
+            SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public);
+            String publicKey = Convert.ToBase64String(info.GetDerEncoded());
+
+            //runCommand = "sudo adduser user2 --gecos \"First Last, RoomNumber, WorkPhone, HomePhone\" --disabled-password && echo \"user2:newpassword\" | sudo chpasswd";
+            runCommand = "sudo mkdir /home/user2/.ssh; sudo chmod 700  /home/user2/.ssh; sudo echo \"ssh-rsa " + publicKey + "\" >> /home/user2/.ssh/authorized_keys";
+
 
             //string sshPrivateKeyString =
             //    "-----BEGIN RSA PRIVATE KEY-----\n"+

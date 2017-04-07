@@ -81,7 +81,7 @@
 					  },
 
 					  "protectedSettings": {
-						"commandToExecute": "docker run -d -p 80:80 --name container_name koralski/azure-vmss-nginx"
+						"commandToExecute": "docker run -d --restart=always -p 80:80 --name container_name trescst/container-info"
 					  }
 					}
 				}
