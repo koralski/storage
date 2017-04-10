@@ -243,6 +243,7 @@
           "storageProfile": {
             "osDisk": {
 				"name": "osdisk1",
+				"osType": "Linux",
            		"vhd": {
 				  "uri": "https://atanasstorage.blob.core.windows.net/system/Microsoft.Compute/Images/images/ubuntuDocker-osDisk.9c1b0872-2f2c-4175-bf52-e491f5d5c6c6.vhd?sv=2016-05-31&ss=b&srt=sco&sp=rwdlac&se=2020-04-10T21:14:21Z&st=2016-04-10T13:14:21Z&spr=https&sig=SLK15Dpvpo%2FmxTm58cqIhkQhbCWO1MeNvLLktZZRXFo%3D"
 				},
