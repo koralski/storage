@@ -1,0 +1,29 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "vmssName":"dockerVMSS",
+	"computeApiVersion": "2016-04-30-preview",
+    "imageName": "[concat(variables('vmssName'), 'image')]",
+	"longNamingInfix": "[toLower(variables('vmssName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/images",
+      "name": "[variables('imageName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('computeApiVersion')]",
+      "properties": {
+		"storageProfile": {
+                    "osDisk": {
+                        "osType": "Linux",
+                        "blobUri": "https://atanasvmssdisks346.blob.core.windows.net/system/Microsoft.Compute/Images/images/ubuntuDocker-osDisk.105e0a64-c77f-448e-8e54-fed4317f7deb.vhd",
+                        "caching": "ReadOnly",
+                        "storageAccountType": "Standard_LRS"
+                    },
+                    "dataDisks": []
+                }
+      }
+    }
+  ]
+}

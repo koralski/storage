@@ -1,0 +1,104 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "vmssName":"dockerVMSS",
+	"adminUsername":"atanas",
+	"adminPassword":"Admin1234!Admin1234!",
+	
+	"osType": {
+      "publisher": "Canonical",
+      "offer": "UbuntuServer",
+      "sku": "16.04.0-LTS",
+      "version": "latest"
+    },
+	"imageName": "[concat(variables('vmssName'), 'image')]",
+	"imageID": "[resourceId('Microsoft.Compute/images',variables('imageName'))]",
+	"imageReference2": {"id": "[variables('imageID')]"},
+	
+    "imageReference": "[variables('osType')]",
+	"virtualNetworkName": "[concat(variables('vmssName'), 'vnet')]",
+	"nicName": "[concat(variables('vmssName'), 'nic')]",
+	"ipConfigName": "[concat(variables('vmssName'), 'ipconfig')]",
+	"subnetName": "[concat(variables('vmssName'), 'subnet')]",	
+    "bePoolName": "[concat(variables('vmssName'), 'bepool')]",
+	"natPoolName": "[concat(variables('vmssName'), 'natpool')]",
+	"natPoolSSHName": "[concat(variables('vmssName'), 'natpoolssh')]",
+	"loadBalancerName": "[concat(variables('vmssName'), 'lb')]",
+	"lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
+	"vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+	"computeApiVersion": "2016-04-30-preview",
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "name": "[variables('vmssName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('computeApiVersion')]",
+      "sku": {
+        "name": "Standard_DS1_v2",
+        "tier": "Standard",
+        "capacity": 3
+      },
+      "properties": {
+        "overprovision": "false",
+        "upgradePolicy": {
+          "mode": "Automatic"
+        },
+
+        "virtualMachineProfile": {
+        "extensionProfile": {
+          "extensions": [
+          ]
+        },
+          "storageProfile": {
+            "osDisk": {
+              "caching": "ReadOnly",
+              "createOption": "FromImage"
+            },
+            "dataDisks": [ ],
+            "imageReference": "[variables('imageReference2')]"
+          },
+          "osProfile": {
+            "computerNamePrefix": "[variables('vmssName')]",
+            "adminUsername": "[variables('adminUsername')]",
+            "adminPassword": "[variables('adminPassword')]"
+          },
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "[variables('nicName')]",
+                "properties": {
+                  "primary": "true",
+                  "ipConfigurations": [
+                    {
+                      "name": "[variables('ipConfigName')]",
+                      "properties": {
+                        "subnet": {
+                          "id": "[concat(variables('vnetID'), '/subnets/', variables('subnetName'))]"
+                        },
+                        "loadBalancerBackendAddressPools": [
+                          {
+                            "id": "[concat(variables('lbID'), '/backendAddressPools/', variables('bePoolName'))]"
+                          }
+                        ],
+                        "loadBalancerInboundNatPools": [
+                          {
+                            "id": "[concat(variables('lbID'), '/inboundNatPools/', variables('natPoolName'))]"
+                          },
+						  {
+                            "id": "[concat(variables('lbID'), '/inboundNatPools/', variables('natPoolSSHName'))]"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

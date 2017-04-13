@@ -1,0 +1,113 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "vmssName":"dockerVMSS",
+
+	"publicIPAddressName": "[concat(variables('vmssName'), 'pip')]",
+    "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",	
+
+    "loadBalancerName": "[concat(variables('vmssName'), 'lb')]",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
+    "natPoolName": "[concat(variables('vmssName'), 'natpool')]",
+    "bePoolName": "[concat(variables('vmssName'), 'bepool')]",
+    "natStartPort": 50000,
+    "natEndPort": 50119,
+    "natBackendPort": 22,
+	
+	"natPoolNameSSH": "[concat(variables('vmssName'), 'natpoolssh')]",
+	"natStartPortSSH": 60000,
+    "natEndPortSSH": 60119,
+    "natBackendPortSSH": 60022,
+
+    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
+	"healthProbeName": "[concat(variables('vmssName'), 'probe')]",
+	"healthProbeID": "[concat(variables('lbID'),'/probes/',variables('healthProbeName'))]",
+	"bePoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('bePoolName'))]",
+    "networkApiVersion": "2016-03-30"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('loadBalancerName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressID')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[variables('bePoolName')]"
+          }
+        ],
+        "inboundNatPools": [
+          {
+            "name": "[variables('natPoolName')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": "[variables('natStartPort')]",
+              "frontendPortRangeEnd": "[variables('natEndPort')]",
+              "backendPort": "[variables('natBackendPort')]"
+            }
+          },
+		  {
+            "name": "[variables('natPoolNameSSH')]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": "[variables('natStartPortSSH')]",
+              "frontendPortRangeEnd": "[variables('natEndPortSSH')]",
+              "backendPort": "[variables('natBackendPortSSH')]"
+            }
+          }
+        ],
+		"loadBalancingRules": [
+			{
+				"name": "WebBalanceRule",
+				"properties": {
+					"frontendIPConfiguration": {
+						"id": "[variables('frontEndIPConfigID')]"
+					},
+					"frontendPort": 80,
+					"backendPort": 80,
+					"enableFloatingIP": false,
+					"idleTimeoutInMinutes": 4,
+					"protocol": "Tcp",
+					"loadDistribution": "Default",
+					"backendAddressPool": {
+						"id": "[variables('bePoolID')]"
+					},
+					"probe": {
+						"id": "[variables('healthProbeID')]"
+					}
+				}
+			}
+		],
+		"probes": [
+			{
+				"name": "[variables('healthProbeName')]",
+				"properties": {
+					"protocol": "Tcp",
+					"port": 80,
+					"intervalInSeconds": 5,
+					"numberOfProbes": 2
+				}
+			}
+		]
+      }
+    }
+  ]
+}

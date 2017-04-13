@@ -41,9 +41,12 @@
     "longNamingInfix": "[toLower(parameters('vmssName'))]",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
+	"addressPrefix2": "11.0.0.0/16",
+    "subnetPrefix2": "11.0.0.0/24",
     "virtualNetworkName": "[concat(variables('namingInfix'), 'vnet')]",
     "publicIPAddressName": "[concat(variables('namingInfix'), 'pip')]",
     "subnetName": "[concat(variables('namingInfix'), 'subnet')]",
+	"subnetName2": "[concat(variables('namingInfix'), 'subnet2')]",
     "loadBalancerName": "[concat(variables('namingInfix'), 'lb')]",
     "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName'))]",
@@ -86,7 +89,8 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-            "[variables('addressPrefix')]"
+            "[variables('addressPrefix')]",
+			"[variables('addressPrefix2')]"
           ]
         },
         "subnets": [
@@ -94,6 +98,12 @@
             "name": "[variables('subnetName')]",
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          },
+		  {
+            "name": "[variables('subnetName2')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetPrefix2')]"
             }
           }
         ]

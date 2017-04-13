@@ -217,39 +217,39 @@
         },
 
         "virtualMachineProfile": {
-        "extensionProfile": {
-          "extensions": [
-            {
-                "name": "CustomScriptForLinux",
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "location": "[resourceGroup().location]",
-                "properties": {
-                  "publisher": "Microsoft.OSTCExtensions",
-                  "type": "CustomScriptForLinux",
-                  "typeHandlerVersion": "1.4",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-						"fileUris": [
-							"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
-							]
-                  },
-                  "protectedSettings": {
-                    "commandToExecute": "echo CustomScriptForLinux installed."
-                  }
-                }
-            }
-          ]
-        },
+			"extensionProfile": {
+			  "extensions": [
+				{
+					"name": "CustomScriptForLinux",
+					"type": "Microsoft.Compute/virtualMachines/extensions",
+					"location": "[resourceGroup().location]",
+					"properties": {
+					  "publisher": "Microsoft.OSTCExtensions",
+					  "type": "CustomScriptForLinux",
+					  "typeHandlerVersion": "1.4",
+					  "autoUpgradeMinorVersion": true,
+					  "settings": {
+							"fileUris": [
+								"https://raw.githubusercontent.com/koralski/storage/master/demo/startcontainer.sh",
+								]
+					  },
+					  "protectedSettings": {
+						"commandToExecute": "echo CustomScriptForLinux installed."
+					  }
+					}
+				}
+			  ]
+			},
           "storageProfile": {
             "osDisk": {
+				"name": "vmssosdisk",
 				"osType": "Linux",
+				"createOption": "FromImage",
            		"image": {
 				  "uri": "https://atanasstorage.blob.core.windows.net/system/Microsoft.Compute/Images/images/ubuntuDocker-osDisk.9c1b0872-2f2c-4175-bf52-e491f5d5c6c6.vhd?sv=2016-05-31&ss=b&srt=sco&sp=rwdlac&se=2020-04-10T21:14:21Z&st=2016-04-10T13:14:21Z&spr=https&sig=SLK15Dpvpo%2FmxTm58cqIhkQhbCWO1MeNvLLktZZRXFo%3D"
 				},
-				"caching": "ReadWrite",
-				"createOption": "FromImage"
-            },
-            "dataDisks": [ ]
+				"caching": "ReadOnly"
+            }
           },
           "osProfile": {
             "computerNamePrefix": "[variables('namingInfix')]",

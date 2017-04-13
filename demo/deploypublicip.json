@@ -1,0 +1,24 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "vmssName":"dockerVMSS",
+	"networkApiVersion": "2016-03-30",
+    "publicIPAddressName": "[concat(variables('vmssName'), 'pip')]",
+	"longNamingInfix": "[toLower(variables('vmssName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('longNamingInfix')]"
+        }
+      }
+    }
+  ]
+}
