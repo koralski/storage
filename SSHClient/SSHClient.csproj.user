@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>13.91.90.211:22 atanas Admin1234!Admin1234! "ps -all%3bdocker ps%3berrorcmd%3b"</StartArguments>
+    <StartArguments>13.68.86.48:50000 atanas Admin1234!Admin1234! "ps -all%3bsudo docker ps%3b"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <StartArguments>23.99.60.241:50000 atanas Admin1234!Admin1234! "ps -all%3bdocker ps%3berrorcmd%3b"</StartArguments>
+    <StartArguments>13.68.86.48:50000 atanas Admin1234!Admin1234! "ps -all%3bdocker ps%3b"</StartArguments>
   </PropertyGroup>
 </Project>

@@ -14,14 +14,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SSHClient
 {
+    public class StartContainerResult
+    {
+        public string containerId { get; set; }
+    }
+
+
     class Program
     {
         static void Main(string[] args)
         {
-            DateTime startTime = DateTime.Now;
+
 
             if (args.Length != 4)
             {
@@ -42,16 +49,16 @@ namespace SSHClient
                 port = int.Parse(hostAndPort[1]);
             }
 
-            var kpgen = new RsaKeyPairGenerator();
-            kpgen.Init(new KeyGenerationParameters(new SecureRandom(new CryptoApiRandomGenerator()), 2048));
-            var keyPair = kpgen.GenerateKeyPair();
-            PrivateKeyInfo pkInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);
-            String privateKey = Convert.ToBase64String(pkInfo.GetDerEncoded());
-            SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public);
-            String publicKey = Convert.ToBase64String(info.GetDerEncoded());
+            //var kpgen = new RsaKeyPairGenerator();
+            //kpgen.Init(new KeyGenerationParameters(new SecureRandom(new CryptoApiRandomGenerator()), 2048));
+            //var keyPair = kpgen.GenerateKeyPair();
+            //PrivateKeyInfo pkInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyPair.Private);
+            //String privateKey = Convert.ToBase64String(pkInfo.GetDerEncoded());
+            //SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public);
+            //String publicKey = Convert.ToBase64String(info.GetDerEncoded());
 
             //runCommand = "sudo adduser user2 --gecos \"First Last, RoomNumber, WorkPhone, HomePhone\" --disabled-password && echo \"user2:newpassword\" | sudo chpasswd";
-            runCommand = "sudo mkdir /home/user2/.ssh; sudo chmod 700  /home/user2/.ssh; sudo echo \"ssh-rsa " + publicKey + "\" >> /home/user2/.ssh/authorized_keys";
+            // runCommand = "sudo mkdir /home/user2/.ssh; sudo chmod 700  /home/user2/.ssh; sudo echo \"ssh-rsa " + publicKey + "\" >> /home/user2/.ssh/authorized_keys";
 
 
             //string sshPrivateKeyString =
@@ -77,6 +84,18 @@ namespace SSHClient
             //var pk = new PrivateKeyFile(@"C:\Users\atanask\Documents\a.txt", "730717");
 
             //ConnectionInfo ci = new PrivateKeyConnectionInfo(host, port, user, pk);
+
+            string response = ExecuteSSHCommand(port, host, user, password, GetContainerStartCommand("80:80", "trescst/container-info"));
+            StartContainerResult r = JsonConvert.DeserializeObject<StartContainerResult>(response);
+
+            ExecuteSSHCommand(port, host, user, password, GetContainerStopCommand(r.containerId));
+
+        }
+
+        private static string ExecuteSSHCommand(int port, string host, string user, string password, string runCommand)
+        {
+            string result = string.Empty;
+            DateTime startTime = DateTime.Now;
             ConnectionInfo connectionInfo = new PasswordConnectionInfo(host, port, user, password);
             using (var client = new SshClient(connectionInfo))
             {
@@ -85,7 +104,7 @@ namespace SSHClient
 
                 Console.WriteLine("Executing command:\n{0}", runCommand);
                 SshCommand command = client.RunCommand(runCommand);
-
+                result = command.Result;
                 Console.WriteLine("\nOutput:\n{0}", command.Result);
                 if (!string.IsNullOrEmpty(command.Error))
                 {
@@ -98,6 +117,17 @@ namespace SSHClient
 
             TimeSpan ts = DateTime.Now - startTime;
             Console.WriteLine("Execution Time: {0} seconds", ts.TotalSeconds);
+            return result;
+        }
+
+        public static string GetContainerStartCommand(string ports, string imageName)
+        {
+            // Executing the command should return Result in json {id:containerId}
+            return string.Format("containerId=$(sudo docker run -d --restart=always -p {0} {1}); echo {{containerId:\"'$containerId'\"}}", ports, imageName);
+        }
+        public static string GetContainerStopCommand(string containerid)
+        {
+            return string.Format("sudo docker stop {0}; sudo docker rm {0}", containerid);
         }
     }
 }
